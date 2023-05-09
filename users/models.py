@@ -38,8 +38,7 @@ class User(AbstractBaseUser):
     nickname = models.CharField('닉네임', max_length=10)
     profile_img = models.ImageField('프로필 사진', null=True, blank=True)
 
-    age = models.PositiveIntegerField('나이')  # 제한을 주고싶을 때 어떻게 하면 되는지
-    introduction = models.TextField('간단 소개글')
+    age = models.PositiveIntegerField('나이',default=0)  # 제한을 주고싶을 때 어떻게 하면 되는지
     followings = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='followers')
     # follow 기능 구현하시는 분이 골라서 선택!
     # followings = models.ManyToManyField("self", symmetrical=False, related_name="followers", blank=True)
