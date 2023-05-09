@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-import os, json
+import os
+import json
 from django.core.exceptions import ImproperlyConfigured
 from datetime import timedelta
 
@@ -23,10 +24,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-secret_file = os.path.join(BASE_DIR, 'secrets.json') # secrets.json 파일 위치
+secret_file = os.path.join(BASE_DIR, 'secrets.json')  # secrets.json 파일 위치
 
 with open(secret_file) as f:
     secrets = json.loads(f.read())
+
 
 def get_secret(setting, secrets=secrets):
     try:
@@ -35,7 +37,8 @@ def get_secret(setting, secrets=secrets):
         error_msg = "Set the {} environment variable".format(setting)
         raise ImproperlyConfigured(error_msg)
 
-SECRET_KEY = get_secret("SECRET_KEY") # SECRET_KEY 가져오기
+
+SECRET_KEY = get_secret("SECRET_KEY")  # SECRET_KEY 가져오기
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -140,7 +143,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'static'
+STATIC_URL = '/static/'
+
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

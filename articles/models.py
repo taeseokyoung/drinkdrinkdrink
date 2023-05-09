@@ -3,6 +3,7 @@ from users.models import User
 
 # Create your models here.
 
+
 class Article(models.Model):
     STAR = (
         ('One', '1'),
@@ -10,15 +11,16 @@ class Article(models.Model):
         ('Three', '3'),
         ('Four', '4'),
         ('Five', '5'),
-        )
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField("제목", max_length=50)
     content = models.TextField("내용")
-    image = models.ImageField("이미지")
-    created_at = models.DateTimeField("생성 시간",auto_now_add=True)
+    image = models.ImageField("이미지", upload_to='%Y/%m/')
+    created_at = models.DateTimeField("생성 시간", auto_now_add=True)
     updated_at = models.DateTimeField("수정 시간", auto_now=True)
-    likes = models.ManyToManyField(User, related_name='like_articles', blank=True)
-    stars = models.PositiveIntegerField("별점", choices=STAR)
+    likes = models.ManyToManyField(
+        User, related_name='like_articles', blank=True)
+    stars = models.CharField("별점", choices=STAR, max_length=5)
 
     def __str__(self):
         return self.title
