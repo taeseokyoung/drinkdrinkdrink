@@ -1,4 +1,5 @@
-from django.urls import path, include
+from django.urls import path, include, re_path
+from dj_rest_auth.registration.views import VerifyEmailView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -15,5 +16,8 @@ urlpatterns = [
          views.FollowingView.as_view(), name='following_view'),
     # dj-reset-auth 패키지 활용하기 
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
-    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls'))
+    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
+    re_path(r'^account-confirm-email/$', VerifyEmailView.as_view(), name='account_email_verification_sent'),
+    # 유저가 클릭한 이메일(=링크) 확인
+    re_path(r'^account-confirm-email/(?P<key>[-:\w]+)/$', views.ConfirmEmailView.as_view(), name='account_confirm_email'),
 ]
