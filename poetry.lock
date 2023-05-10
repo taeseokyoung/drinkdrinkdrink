@@ -59,24 +59,6 @@ files = [
 graph = ["objgraph (>=1.7.2)"]
 
 [[package]]
-name = "dj-rest-auth"
-version = "4.0.0"
-description = "Authentication and Registration in Django Rest Framework"
-category = "main"
-optional = false
-python-versions = ">=3.5"
-files = [
-    {file = "dj-rest-auth-4.0.0.tar.gz", hash = "sha256:75f5cba821500ffd81574beb6e164b428d19141fda94252a6423396292cd53c3"},
-]
-
-[package.dependencies]
-Django = ">=2.0"
-djangorestframework = ">=3.7.0"
-
-[package.extras]
-with-social = ["django-allauth (>=0.40.0,<0.53.0)"]
-
-[[package]]
 name = "django"
 version = "4.2.1"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."

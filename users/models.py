@@ -34,14 +34,14 @@ class User(AbstractBaseUser):
     email = models.EmailField(
         verbose_name="이메일",
         max_length=255,
-        unique=True,
+        # unique=True,
     )
     nickname = models.CharField('닉네임', max_length=10)
     profile_img = models.ImageField('프로필 사진', null=True, blank=True)
 
-    age = models.PositiveIntegerField('나이', validators=[MinValueValidator(20)])  # 제한을 주고싶을 때 어떻게 하면 되는지
+    age = models.PositiveIntegerField('나이', validators=[MinValueValidator(20)], default=0) # 제한을 주고싶을 때 어떻게 하면 되는지
     followings = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='followers')
-    # follow 기능 구현하시는 분이 골라서 선택!
+    # follow 기능 구현하시는 분이 골라서 선UNIQUE constraint failed: users_user.user_id택!
     # followings = models.ManyToManyField("self", symmetrical=False, related_name="followers", blank=True)
     created_at = models.DateTimeField("생성 시간", auto_now_add=True)
     updated_at = models.DateTimeField("수정 시간", auto_now=True)
