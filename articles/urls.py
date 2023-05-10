@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path
 
 from articles import views
@@ -13,11 +15,14 @@ urlpatterns = [
     ),
     path("<int:article_id>/like/", views.LikeView.as_view(), name="like_view"),
     path(
-        "<int:article_id>/comments/", views.CommentView.as_view(), name="comment_view"
+        "comments/", views.CommentView.as_view(), name="comment_view"
     ),
     path(
-        "<int:article_id>/comments/<int:comment_id>/",
+        "comments/<int:comment_id>/",
         views.CommentDetailView.as_view(),
         name="comment_view",
     ),
 ]
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
