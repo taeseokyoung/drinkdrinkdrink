@@ -3,11 +3,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from rest_framework.generics import get_object_or_404
-from .models import Article
+from articles.models import Article
 from .serializers import (
     CommentCreateSerializer,
     CommentSerializer,
     ArticleDetailSerializer,
+    ArticleCreateSerializer
 )
 
 
@@ -41,11 +42,17 @@ class HomeView(APIView):
 
 
 class ArticleWriteView(APIView):
+    # 로그인 한 사용자만 작성가능!
+    permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request):
         """
         게시글 작성 페이지
         """
-        return Response({"message": "post!"})
+        serializer = ArticleCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)
+        return Response({"message": "게시글 작성완료!"})
 
 
 class ArticleDetailView(APIView):
@@ -53,12 +60,12 @@ class ArticleDetailView(APIView):
         """
         상세 게시글 보기 / 댓글 띄우기
         """
-        
+
         # 게시글 id로 게시글 존재 여부 확인
         article = get_object_or_404(Article, id=article_id)
         serializer = ArticleDetailSerializer(article)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     def put(self, request, article_id):
         """
         상세 게시글 수정
@@ -75,7 +82,7 @@ class ArticleDetailView(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response("게시글 수정 권한이 없습니다.", status=status.HTTP_403_FORBIDDEN)
-    
+
     def delete(self, request, article_id):
         """
         상세 게시글 삭제
@@ -87,6 +94,7 @@ class ArticleDetailView(APIView):
             return Response("게시글이 삭제되었습니다.", status=status.HTTP_204_NO_CONTENT)
         else:
             return Response("게시글 삭제 권한이 없습니다.", status=status.HTTP_403_FORBIDDEN)
+
 
 class LikeView(APIView):
     def post(self, request):

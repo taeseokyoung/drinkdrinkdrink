@@ -1,6 +1,14 @@
 from rest_framework import serializers
 from .models import Article, Comment
 
+
+class ArticleCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Article
+        fields = ("title", "content", "stars", "image")  # user는 제외!
+
+
 class ArticleDetailSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     # comment 불러오는 건 comment 시리얼라이저 만들어지면 수정!
