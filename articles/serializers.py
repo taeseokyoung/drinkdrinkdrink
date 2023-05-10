@@ -1,6 +1,23 @@
 from rest_framework import serializers
 from .models import Article, Comment
 
+
+class ArticleListSerializer(serializers.ModelSerializer):
+    # user,like = something.serializer
+    class Meta:
+        model = Article
+        fields = (
+            "id",
+            "user",
+            "title",
+            "image",
+            "likes",
+            "stars",
+            "created_at",
+            "updated_at",
+        )
+
+
 class ArticleDetailSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     # comment 불러오는 건 comment 시리얼라이저 만들어지면 수정!

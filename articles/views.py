@@ -1,43 +1,42 @@
+from django.conf import settings
 from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
 from rest_framework.generics import get_object_or_404
 from .models import Article
 from .serializers import (
     CommentCreateSerializer,
     CommentSerializer,
     ArticleDetailSerializer,
+    ArticleListSerializer,
+    ArticleCreateSerializer,
 )
 
 
-"""페이지네이션!"""
-
-
-#  def get(self, request, pk):
-#         try:
-#             page = request.query_params.get("page", 1)
-#             page = int(page)
-#         except ValueError:
-#             page = 1
-#         page_size = settings.PAGE_SIZE
-#         start = (page - 1) * page_size
-#         end = start + page_size
-#         article = self.get_object(pk)
-#         serializer = ArticleDetailSerializer(
-#             article.objects.all()[start:end],
-#             many=True,
-#         )
-#         return Response(serializer.data)
-# settings에서 PAGE_SIZE = 3 넣기
-
-
+# page?=1,2,3...
 class HomeView(APIView):
     def get(self, request):
-        """
-        HOME
-        """
-        return Response({"message": "get!"})
+        articles = Article.objects.all()
+        order_condition = request.query_params.get("order", None)
+        if order_condition == "recent":
+            articles = Article.objects.order_by("created_at")
+        if order_condition == "likes":
+            articles = Article.objects.order_by("likes")
+        if order_condition == "stars":
+            articles = Article.objects.order_by("stars")
+        try:
+            page = request.query_params.get("page", 1)
+            page = int(page)
+        except ValueError:
+            page = 1
+        page_size = settings.PAGE_SIZE
+        start = (page - 1) * page_size
+        end = start + page_size
+        serializer = ArticleListSerializer(
+            articles[start:end],
+            many=True,
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ArticleWriteView(APIView):
@@ -53,12 +52,12 @@ class ArticleDetailView(APIView):
         """
         상세 게시글 보기 / 댓글 띄우기
         """
-        
+
         # 게시글 id로 게시글 존재 여부 확인
         article = get_object_or_404(Article, id=article_id)
         serializer = ArticleDetailSerializer(article)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     def put(self, request, article_id):
         """
         상세 게시글 수정
@@ -75,7 +74,7 @@ class ArticleDetailView(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response("게시글 수정 권한이 없습니다.", status=status.HTTP_403_FORBIDDEN)
-    
+
     def delete(self, request, article_id):
         """
         상세 게시글 삭제
@@ -87,6 +86,7 @@ class ArticleDetailView(APIView):
             return Response("게시글이 삭제되었습니다.", status=status.HTTP_204_NO_CONTENT)
         else:
             return Response("게시글 삭제 권한이 없습니다.", status=status.HTTP_403_FORBIDDEN)
+
 
 class LikeView(APIView):
     def post(self, request):
