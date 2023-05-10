@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import User
+from django.core.mail import EmailMessage
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -8,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = "__all__"
         extra_kwargs = {
             "followings": {
-                "read_only":True,
+                "read_only": True,
             },
         }
 
@@ -17,4 +18,8 @@ class UserSerializer(serializers.ModelSerializer):
         user = User(**validated_data)
         user.set_password(password)
         user.save()
+
+        to_email = user.email
+        email = EmailMessage("title", "content", to=[to_email])
+        email.send()
         return user
