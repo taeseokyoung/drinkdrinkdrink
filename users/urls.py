@@ -13,4 +13,7 @@ urlpatterns = [
     path('profile/<int:user_id>/', views.ProfileView.as_view(), name='profile_view'),
     path('profile/<int:user_id>/following/',
          views.FollowingView.as_view(), name='following_view'),
+    # dj-reset-auth 패키지 활용하기 
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls'))
 ]
