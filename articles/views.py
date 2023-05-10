@@ -62,7 +62,6 @@ class ArticleDetailView(APIView):
         """
         상세 게시글 수정
         """
-
         article = get_object_or_404(Article, id=article_id)
         if request.user == article.user:
             # 게시글 작성하는 시리얼라이저랑 같은 시리얼라이저 사용
@@ -79,7 +78,6 @@ class ArticleDetailView(APIView):
         """
         상세 게시글 삭제
         """
-
         article = get_object_or_404(Article, id=article_id)
         if request.user == article.user:
             article.delete()
@@ -89,10 +87,19 @@ class ArticleDetailView(APIView):
 
 
 class LikeView(APIView):
-    def post(self, request):
-        """한 번 누르면 좋아요.
-        두 번 누르면 좋아요를 취소합니다."""
-        return Response({"message": "좋아요 누르기"})
+    def post(self, request, article_id):
+        # 게시글 가져오기
+        article = get_object_or_404(Article, id=article_id)
+        # 현재 로그인 된 유저가 좋아요가 눌러져 있을 경우
+        if request.user in article.likes.all():
+            # 좋아요를 취소
+            article.likes.remove(request.user)
+            return Response("좋아요를 취소했습니다.", status=status.HTTP_200_OK)
+        # 현재 로그인 된 유저가 좋아요를 누르지 않았을 경우
+        else:
+            # 좋아요 추가
+            article.likes.add(request.user)
+            return Response("좋아요를 눌렀습니다.", status=status.HTTP_200_OK)
 
 
 # comment 클래스 추가
