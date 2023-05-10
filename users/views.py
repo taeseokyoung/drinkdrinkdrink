@@ -7,18 +7,9 @@ from users.serializers import UserSerializer
 class UserView(APIView):
     def post(self, request):
         serializer = UserSerializer(data=request.data)
-        try:
-            # request.data에서 'age'를 key로 value찾기 
-            age = request.data['age']
-        except KeyError:
-            return Response({"message":"나이를 입력해주세요."}, status=status.HTTP_400_BAD_REQUEST)
         if serializer.is_valid():
-            # value로 미성년자 if문 설정
-            if age >= 20:
-                serializer.save()
-                return Response({"message":"가입완료!"}, status=status.HTTP_201_CREATED)
-            else:
-                return Response({"message":"미성년자입니다."}, status=status.HTTP_406_NOT_ACCEPTABLE)
+            serializer.save()
+            return Response({"message":"가입완료!"}, status=status.HTTP_201_CREATED)
         else:
             return Response({"message":f"${serializer.errors}"}, status=status.HTTP_400_BAD_REQUEST)
 
