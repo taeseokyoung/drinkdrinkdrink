@@ -9,10 +9,7 @@ class UserManager(BaseUserManager):
         if not user_id:
             raise ValueError("Users must have an ID")
 
-        user = self.model(
-            user_id=user_id,
-            **kwargs
-        )
+        user = self.model(user_id=user_id, **kwargs)
 
         user.set_password(password)
         user.save(using=self._db)
@@ -30,17 +27,21 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
-    user_id = models.CharField('아이디', max_length=20, unique=True)
+    user_id = models.CharField("아이디", max_length=20, unique=True)
     email = models.EmailField(
         verbose_name="이메일",
         max_length=255,
-        unique=True,
+        # unique=True,
     )
-    nickname = models.CharField('닉네임', max_length=10)
-    profile_img = models.ImageField('프로필 사진', null=True, blank=True)
+    nickname = models.CharField("닉네임", max_length=10)
+    profile_img = models.ImageField("프로필 사진", null=True, blank=True)
 
-    age = models.PositiveIntegerField('나이', validators=[MinValueValidator(20)])  # 제한을 주고싶을 때 어떻게 하면 되는지
-    followings = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='followers')
+    age = models.PositiveIntegerField(
+        "나이", validators=[MinValueValidator(20)], default=0
+    )
+    followings = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="followers"
+    )
     # follow 기능 구현하시는 분이 골라서 선택!
     # followings = models.ManyToManyField("self", symmetrical=False, related_name="followers", blank=True)
     created_at = models.DateTimeField("생성 시간", auto_now_add=True)
@@ -54,25 +55,30 @@ class User(AbstractBaseUser):
         TAKJU = "TAKJU", "탁주"
         ETC = "ETC", "기타"
         NO = "NO", "응답하지 않음"
-    fav_alcohol = models.CharField('주종', choices=AlcoholChoices.choices, null=True, blank=True, max_length=10)
-    
-    AMOUNT = (
-        ('BABY', '알쓰'),
-        ('CHOBO', '술찌'),
-        ('JUNGSU', '애주가'),
-        ('GOSU', '술꾼'),
-        ('GOD', '디오니소스'),
+
+    fav_alcohol = models.CharField(
+        "주종", choices=AlcoholChoices.choices, null=True, blank=True, max_length=10
     )
-    amo_alcohol = models.CharField('주량', choices=AMOUNT, null=True, blank=True, max_length=10) 
-    
+
+    AMOUNT = (
+        ("BABY", "알쓰"),
+        ("CHOBO", "술찌"),
+        ("JUNGSU", "애주가"),
+        ("GOSU", "술꾼"),
+        ("GOD", "디오니소스"),
+    )
+    amo_alcohol = models.CharField(
+        "주량", choices=AMOUNT, null=True, blank=True, max_length=10
+    )
+
     # null=true 빈값상관없다 #blank=true isvalid에서 null값이더라도 통과!
 
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
 
     objects = UserManager()
 
-    USERNAME_FIELD = "user_id" # 로그인 뭘로 할건지
+    USERNAME_FIELD = "user_id"  # 로그인 뭘로 할건지
     REQUIRED_FIELDS = []  # null true 안 줄 것들
 
     def __str__(self):
