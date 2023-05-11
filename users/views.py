@@ -3,6 +3,7 @@ from django.utils.http import urlsafe_base64_decode
 from rest_framework.views import APIView
 from rest_framework import status, permissions
 from rest_framework.response import Response
+from rest_framework.generics import get_object_or_404
 
 from .models import User
 from .serializers import UserSerializer
@@ -43,12 +44,24 @@ class ProfileView(APIView):
         return
 
 
-class FollowingView(APIView):
-    def get(self, request, user_id):
+class FollowView(APIView):
+    def post(self, request, user_id):
         """
-        user가 팔로잉하고 있는 목록 보여주기
+        현재 페이지의 유저(user_id)를 follow 하기
         """
-        return Response({"message": "put!"})
+        # you : 현재 페이지 번호의 user, me : 로그인 된 유저(나)
+        you = get_object_or_404(User, id=user_id)
+        me = request.user
+        # 만약 you의 팔로워 목록에 me가 있으면
+        if me in you.followers.all():
+            # 팔로우 취소
+            you.followers.remove(me)
+            return Response("팔로우를 취소했습니다.", status=status.HTTP_200_OK)
+        # you의 팔로워 목록에 me가 없으면
+        else:
+            # 팔로우 하기
+            you.followers.add(me)
+            return Response("팔로우 했습니다.", status=status.HTTP_200_OK)
 
 
 class ActivateView(APIView):

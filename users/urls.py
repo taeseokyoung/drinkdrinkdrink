@@ -13,8 +13,8 @@ urlpatterns = [
     path("profile/<int:user_id>/", views.ProfileView.as_view(), name="profile_view"),
     path(
         "profile/<int:user_id>/following/",
-        views.FollowingView.as_view(),
-        name="following_view",
+        views.FollowView.as_view(),
+        name="follow_view",
     ),
     path(
         "activate/<str:uidb64>/<str:token>/",
