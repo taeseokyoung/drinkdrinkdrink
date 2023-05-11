@@ -22,6 +22,7 @@ class UserManager(BaseUserManager):
             age=100,
         )
         user.is_admin = True
+        user.is_active = 1
         user.save(using=self._db)
         return user
 
@@ -40,10 +41,8 @@ class User(AbstractBaseUser):
         "나이", validators=[MinValueValidator(20)], default=0
     )
     followings = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="followers"
+        "self", symmetrical=False, related_name="followers", blank=True
     )
-    # follow 기능 구현하시는 분이 골라서 선택!
-    # followings = models.ManyToManyField("self", symmetrical=False, related_name="followers", blank=True)
     created_at = models.DateTimeField("생성 시간", auto_now_add=True)
     updated_at = models.DateTimeField("수정 시간", auto_now=True)
 
