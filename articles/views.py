@@ -40,10 +40,15 @@ class HomeView(APIView):
 
 
 class ArticleWriteView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     def post(self, request):
         """
         게시글 작성 페이지
         """
+        serializer = ArticleCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)
+        return Response({"message": "게시글 작성완료!"})
         return Response({"message": "post!"})
 
 

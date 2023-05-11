@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import Article, Comment
+# from users.models import User
+
 
 
 class ArticleListSerializer(serializers.ModelSerializer):
@@ -16,6 +18,12 @@ class ArticleListSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
+
+class ArticleCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Article
+        fields = ("title", "content", "stars", "image")  # user는 제외!
 
 
 class ArticleDetailSerializer(serializers.ModelSerializer):
@@ -42,7 +50,7 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
 # serializer 추가
 class CommentSerializer(serializers.ModelSerializer):
     # UserSerializer 있다고 가정
-    user = serializers.UserSerializer(read_only=True)
+    # user = User
 
     class Meta:
         model = Comment
