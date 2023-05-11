@@ -1,17 +1,12 @@
 from django.db import models
 from users.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
 
 
 class Article(models.Model):
-    STAR = (
-        ('One', '1'),
-        ('Two', '2'),
-        ('Three', '3'),
-        ('Four', '4'),
-        ('Five', '5'),
-    )
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField("제목", max_length=50)
     content = models.TextField("내용")
@@ -20,7 +15,8 @@ class Article(models.Model):
     updated_at = models.DateTimeField("수정 시간", auto_now=True)
     likes = models.ManyToManyField(
         User, related_name='like_articles', blank=True)
-    stars = models.CharField("별점", choices=STAR, max_length=5)
+    stars = models.PositiveIntegerField(
+        '별점', validators=[MaxValueValidator(5), MinValueValidator(1)])
 
     def __str__(self):
         return self.title
