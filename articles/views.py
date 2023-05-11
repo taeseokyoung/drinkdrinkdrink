@@ -3,7 +3,7 @@ from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
-from articles.models import Article
+from articles.models import Article, Comment
 from .serializers import (
     CommentCreateSerializer,
     CommentSerializer,
@@ -97,7 +97,7 @@ class LikeView(APIView):
         # 게시글 가져오기
         article = get_object_or_404(Article, id=article_id)
         # 현재 로그인 된 유저가 좋아요가 눌러져 있을 경우
-        if request.user in article.likes.all():
+        if request.user.id in article.likes.all():
             # 좋아요를 취소
             article.likes.remove(request.user)
             return Response("좋아요를 취소했습니다.", status=status.HTTP_200_OK)
@@ -129,7 +129,7 @@ class CommentView(APIView):
 
 class CommentDetailView(APIView):
     def put(self, request, article_id, comment_id):
-        comment = Article.objects.get(pk=comment_id)
+        comment = Comment.objects.get(pk=comment_id)
         if request.user == comment.user:
             serializer = CommentCreateSerializer(comment, data=request.data)
             if serializer.is_valid():
@@ -141,7 +141,7 @@ class CommentDetailView(APIView):
             return Response("권한이 없습니다!", status=status.HTTP_403_FORBIDDEN)
 
     def delete(self, request, article_id, comment_id):
-        comment = get_object_or_404(Article, pk=comment_id)
+        comment = get_object_or_404(Comment, pk=comment_id)
         if request.user == comment.user:
             comment.delete()
             return Response("삭제완료", status=status.HTTP_204_NO_CONTENT)
