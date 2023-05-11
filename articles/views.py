@@ -3,7 +3,7 @@ from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
-from .models import Article
+from articles.models import Article
 from .serializers import (
     CommentCreateSerializer,
     CommentSerializer,
@@ -40,7 +40,9 @@ class HomeView(APIView):
 
 
 class ArticleWriteView(APIView):
+    # 로그인 한 사용자만 작성가능!
     permission_classes = [permissions.IsAuthenticated]
+
     def post(self, request):
         """
         게시글 작성 페이지
@@ -49,7 +51,6 @@ class ArticleWriteView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user)
         return Response({"message": "게시글 작성완료!"})
-        return Response({"message": "post!"})
 
 
 class ArticleDetailView(APIView):
