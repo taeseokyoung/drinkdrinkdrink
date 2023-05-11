@@ -22,6 +22,7 @@ class UserManager(BaseUserManager):
             age=100,
         )
         user.is_admin = True
+        user.is_active = 1
         user.save(using=self._db)
         return user
 
@@ -59,7 +60,6 @@ class User(AbstractBaseUser):
     fav_alcohol = models.CharField(
         "주종", choices=AlcoholChoices.choices, null=True, blank=True, max_length=10
     )
-
     AMOUNT = (
         ("BABY", "알쓰"),
         ("CHOBO", "술찌"),
