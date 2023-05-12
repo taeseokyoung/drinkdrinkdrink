@@ -52,10 +52,13 @@ class ProfileView(APIView):
         
  
         
-    def delete(self, request, user_id):
+    def delete(self, request):
         """
         회원 탈퇴
         """
+        user = request.user
+        user.is_active = False
+        user.save()
         return
 
 
