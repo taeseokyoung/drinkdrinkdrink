@@ -36,8 +36,7 @@ class User(AbstractBaseUser):
         # unique=True,
     )
     nickname = models.CharField("닉네임", max_length=10)
-    profile_img = models.ImageField("프로필 사진", null=True, blank=True)
-
+    profile_img = models.ImageField("프로필 사진", blank=True, upload_to="%Y/%m")
     age = models.PositiveIntegerField(
         "나이", validators=[MinValueValidator(20)], default=0
     )
@@ -64,7 +63,6 @@ class User(AbstractBaseUser):
     )
     AMOUNT = (
         ("BABY", "알쓰"),
-        
         ("CHOBO", "술찌"),
         ("JUNGSU", "애주가"),
         ("GOSU", "술꾼"),
