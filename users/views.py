@@ -4,9 +4,11 @@ from rest_framework.views import APIView
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.generics import get_object_or_404
 
 from .models import User
-from .serializers import UserSerializer
+from .serializers import UserSerializer, UserProfileSerializer, UserProfileEditSerializer
 from .tokens import account_activation_token
 
 
@@ -23,20 +25,33 @@ class UserView(APIView):
 
 
 class ProfileView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    # 비로그인 유저도 프로필까지는 볼 수 있음 permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, user_id):
         """
         마이 페이지
         """
-        return Response({"message": "get!"})
-
+        user = get_object_or_404(User,id=user_id)
+        serializer = UserProfileSerializer(user)
+        return Response(serializer.data)
+    
     def put(self, request, user_id):
         """
         프로필 수정
         """
-        return Response({"message": "put!"})
-
+        # serializer = UserSerializer(data=request.data)
+        # myInfo = User.objects.get(id=user_id)
+        user = get_object_or_404(User,id=user_id)
+        serializer = UserProfileEditSerializer(user, data=request.data)
+        # print(request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save() 
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+ 
+        
     def delete(self, request, user_id):
         """
         회원 탈퇴
@@ -46,6 +61,13 @@ class ProfileView(APIView):
 
 class FollowView(APIView):
     def post(self, request, user_id):
+        user = get_object_or_404(User,id=user_id)
+        user.is_active=False
+        user.save()
+        return Response({'message':'delete 요청!'})      
+                  
+class FollowingView(APIView):
+    def get(self, request, user_id):
         """
         현재 페이지의 유저(user_id)를 follow 하기
         """
