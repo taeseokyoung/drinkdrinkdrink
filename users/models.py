@@ -22,6 +22,7 @@ class UserManager(BaseUserManager):
             age=100,
         )
         user.is_admin = True
+        # 이메일 인증 시 active가 1로 바뀌기 때문에 슈퍼유저는 이 과정을 거치지 않는다.
         user.is_active = 1
         user.save(using=self._db)
         return user
@@ -41,8 +42,10 @@ class User(AbstractBaseUser):
         "나이", validators=[MinValueValidator(20)], default=0
     )
     followings = models.ManyToManyField(
-        "self", symmetrical=False, related_name="followers", blank=True
+        settings.AUTH_USER_MODEL, related_name="followers"
     )
+    # follow 기능 구현하시는 분이 골라서 선택!
+    # followings = models.ManyToManyField("self", symmetrical=False, related_name="followers", blank=True)
     created_at = models.DateTimeField("생성 시간", auto_now_add=True)
     updated_at = models.DateTimeField("수정 시간", auto_now=True)
 
@@ -53,6 +56,7 @@ class User(AbstractBaseUser):
         LIQUOR = "LIQUOR", "양주"
         TAKJU = "TAKJU", "탁주"
         ETC = "ETC", "기타"
+        # ALL = "ALL", "모든 종류" 추가하고 싶어요..
         NO = "NO", "응답하지 않음"
 
     fav_alcohol = models.CharField(
@@ -60,6 +64,7 @@ class User(AbstractBaseUser):
     )
     AMOUNT = (
         ("BABY", "알쓰"),
+        
         ("CHOBO", "술찌"),
         ("JUNGSU", "애주가"),
         ("GOSU", "술꾼"),

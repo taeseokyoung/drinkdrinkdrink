@@ -76,7 +76,7 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = [
         (
             None,
-            {"fields": ("email", "user_id", "password", "fav_alcohol", "amo_alcohol")},
+            {"fields": ("email", "user_id", "password","followings", "fav_alcohol", "amo_alcohol")},
         ),
         ("Permissions", {"fields": ("is_admin",)}),
     ]

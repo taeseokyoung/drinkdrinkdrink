@@ -6,10 +6,11 @@ from rest_framework import serializers
 
 from .models import User
 from .tokens import account_activation_token
+from articles.serializers import ArticleListSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
-    class Meta:
+    class Meta: 
         model = User
         fields = "__all__"
         extra_kwargs = {
@@ -39,3 +40,52 @@ class UserSerializer(serializers.ModelSerializer):
         )
         email.send()
         return user
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    # followings = serializers.StringRelatedField(many=True) user_id로 설정하고 싶을 때 사용
+    # related_name 으로 설정함
+    followers = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    my_articles = ArticleListSerializer(many=True)
+    # 라이크 아티클인데.. 팔로우를 한 사람의 피드가 보여지는 것 같아요...?
+    like_articles = ArticleListSerializer(many=True)
+
+    class Meta:
+        model = User
+        fields = ("id", "nickname", "profile_img", "password",
+                  "fav_alcohol", "amo_alcohol", "followings","followers","like_articles", "my_articles")
+        
+        # "followers", "my_articles","like_articles"
+
+
+class UserProfileEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["user_id","nickname","profile_img","fav_alcohol", "amo_alcohol","password"]
+        extra_kwargs = {
+            "user_id": {
+                "read_only": True,
+            },
+
+            "password":{
+                "write_only": True,
+            },
+        }
+
+    # instance = database
+    def update(self, instance, validated_data):
+        instance.nickname = validated_data.get('nickname', instance.nickname)
+        instance.profile_img = validated_data.get('profile_img', instance.profile_img)
+        instance.fav_alcohol = validated_data.get('fav_alcohol', instance.fav_alcohol)
+        instance.amo_alcohol = validated_data.get('amo_alcohol', instance.amo_alcohol)
+        password = validated_data.pop("password")
+        instance.set_password(password) # 해싱
+        instance.save() # 데이터베이스에 저장
+        return instance
+
+
+
+
+
+    
+    
+    
