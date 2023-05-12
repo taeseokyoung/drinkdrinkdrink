@@ -16,7 +16,15 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ["email","user_id","nickname","age","profile_img","fav_alcohol","amo_alcohol",]
+        fields = [
+            "email",
+            "user_id",
+            "nickname",
+            "age",
+            "profile_img",
+            "fav_alcohol",
+            "amo_alcohol",
+        ]
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
@@ -38,27 +46,41 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ["email","user_id","nickname","age","profile_img","fav_alcohol","amo_alcohol", "is_active", "is_admin",]
+        fields = [
+            "email",
+            "user_id",
+            "nickname",
+            "age",
+            "profile_img",
+            "fav_alcohol",
+            "amo_alcohol",
+            "is_active",
+            "is_admin",
+        ]
 
 
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
-    list_display = ["email","user_id","nickname","age","profile_img","fav_alcohol","amo_alcohol", "is_admin",]
+    list_display = [
+        "email",
+        "user_id",
+        "nickname",
+        "age",
+        "profile_img",
+        "fav_alcohol",
+        "amo_alcohol",
+        "is_admin",
+    ]
     list_filter = ["is_admin"]
     fieldsets = [
         (
             None,
-            {
-              "fields": ("email","user_id","password",)
-            }
+            {"fields": ("email", "user_id", "password","followings", "fav_alcohol", "amo_alcohol")},
         ),
-        (
-        "Permissions",
-         {"fields": ("is_admin",)}
-         ),
+        ("Permissions", {"fields": ("is_admin",)}),
     ]
-    
+
     #     fieldsets = [
     #     (None, {"fields": ["email", "password"]}),
     #     ("Personal info", {"fields": ["name"]}),
@@ -67,7 +89,7 @@ class UserAdmin(BaseUserAdmin):
     #     ("Personal info", {"fields": ["intro"]}),
     #     ("Permissions", {"fields": ["is_admin"]}),
     # ]
-    
+
     add_fieldsets = [
         (
             None,
@@ -78,7 +100,7 @@ class UserAdmin(BaseUserAdmin):
         ),
     ]
     search_fields = ["user_id"]
-    ordering = ["user_id"] # admin 페이지의 오름차순 정렬 기준
+    ordering = ["user_id"]  # admin 페이지의 오름차순 정렬 기준
     filter_horizontal = []
 
 
