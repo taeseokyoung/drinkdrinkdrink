@@ -54,6 +54,8 @@ class ArticleWriteView(APIView):
 
 
 class ArticleDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
     def get(self, request, article_id):
         """
         상세 게시글 보기 / 댓글 띄우기
@@ -93,6 +95,8 @@ class ArticleDetailView(APIView):
 
 
 class LikeView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
     def post(self, request, article_id):
         # 게시글 가져오기
         article = get_object_or_404(Article, id=article_id)
@@ -110,6 +114,8 @@ class LikeView(APIView):
 
 # comment 클래스 추가
 class CommentView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
     def get(self, request, article_id):
         article = Article.objects.get(pk=article_id)
         comments = article.comment_set.all()
@@ -128,6 +134,8 @@ class CommentView(APIView):
 
 
 class CommentDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
     def put(self, request, article_id, comment_id):
         comment = Comment.objects.get(pk=comment_id)
         if request.user == comment.user:

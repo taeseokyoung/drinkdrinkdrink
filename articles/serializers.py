@@ -41,7 +41,7 @@ class ArticleCreateSerializer(serializers.ModelSerializer):
 
 class ArticleDetailSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
-    comments = serializers.CommentSerializer(many=True)
+    comments = CommentSerializer(many=True)
     # comment 불러오는 건 comment 시리얼라이저 만들어지면 수정!
     # comments = 코멘트시리얼라이저(many=True)
 
