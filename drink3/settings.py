@@ -114,6 +114,8 @@ WSGI_APPLICATION = "drink3.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 if DEBUG:
+    SESSION_COOKIE_DOMAIN = ".drinkdrinkdrink.xyz"
+    CSRF_COOKIE_DOMAIN = ".drinkdrinkdrink.xyz"
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
