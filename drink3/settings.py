@@ -10,13 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path
-import os
-import json
-from django.core.exceptions import ImproperlyConfigured
-from datetime import timedelta
 import dj_database_url
 import sentry_sdk
+import os
+import json
+from datetime import timedelta
+from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -165,12 +165,13 @@ USE_TZ = True
 
 STATIC_ROOT = BASE_DIR / "static"
 STATIC_URL = "/static/"
+
+MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/media/"
 if not DEBUG:
     STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-MEDIA_ROOT = BASE_DIR / "media"
-MEDIA_URL = "/media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -229,6 +230,8 @@ if DEBUG:
 else:
     CORS_ALLOWED_ORIGINS = ["https://drinkdrinkdrink.xyz"]
     CSRF_TRUSTED_ORIGINS = ["https://drinkdrinkdrink.xyz"]
+
+CORS_ALLOW_CREDENTIALS = True
 
 if not DEBUG:
     SESSION_COOKIE_DOMAIN = ".drinkdrinkdrink.xyz"
