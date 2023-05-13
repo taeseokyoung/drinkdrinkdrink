@@ -33,13 +33,11 @@ class User(AbstractBaseUser):
     email = models.EmailField(
         verbose_name="이메일",
         max_length=255,
-        # unique=True,
+        unique=True,
     )
-    nickname = models.CharField("닉네임", max_length=10)
+    nickname = models.CharField("닉네임", max_length=10, null=True)
     profile_img = models.ImageField("프로필 사진", null=True, blank=True, upload_to="%Y/%m")
-    age = models.PositiveIntegerField(
-        "나이", validators=[MinValueValidator(20)], default=0
-    )
+    age = models.PositiveIntegerField("나이", validators=[MinValueValidator(20)])
     followings = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="followers", blank=True
     )

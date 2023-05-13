@@ -5,8 +5,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 # Create your models here.
 
 
-class Article(models.Model):
-        
+class Article(models.Model):   
     def total_likes(self):
         return self.likes.count()
 
@@ -17,7 +16,6 @@ class Article(models.Model):
     created_at = models.DateTimeField("생성 시간", auto_now_add=True)
     updated_at = models.DateTimeField("수정 시간", auto_now=True)
     likes = models.ManyToManyField(User, related_name="like_articles", blank=True)
-    likes_num = models.IntegerField(default=0)
     stars = models.PositiveIntegerField(
         "별점", validators=[MaxValueValidator(5), MinValueValidator(1)]
     )
