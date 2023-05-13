@@ -16,6 +16,8 @@ import json
 from django.core.exceptions import ImproperlyConfigured
 from datetime import timedelta
 import dj_database_url
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -219,3 +221,13 @@ DEFAULT_FROM_MAIL = EMAIL_HOST_USER
 PAGE_SIZE = 3
 
 CORS_ALLOW_ALL_ORIGINS = True  # 개발중 사용 모든 cors 허용
+
+if not DEBUG:
+    sentry_sdk.init(
+        dsn="https://d3902b5141864f499cb6263ba3414da7@o4505176014651392.ingest.sentry.io/4505176017207296",
+        integrations=[
+            DjangoIntegration(),
+        ],
+        traces_sample_rate=1.0,
+        send_default_pii=True,
+    )
