@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.conf import settings
 from rest_framework import status, permissions
 from rest_framework.views import APIView
@@ -19,18 +20,18 @@ class HomeView(APIView):
         articles = Article.objects.all()
         order_condition = request.query_params.get("order", None)
         if order_condition == "recent":
-            articles = Article.objects.order_by("created_at")
-        if order_condition == "likes":
-            articles = Article.objects.order_by("likes")
+            articles = Article.objects.order_by("-created_at")
+        if order_condition == 'likes':
+            articles = Article.objects.annotate(likes_count=Count('likes')).order_by('-likes_count')
         if order_condition == "stars":
-            articles = Article.objects.order_by("stars")
+            articles = Article.objects.order_by("-stars")
         try:
             page = request.query_params.get("page", 1)
             page = int(page)
         except ValueError:
             page = 1
         page_size = settings.PAGE_SIZE
-        start = (page - 1) * page_size
+        start = (page - 1)*page_size
         end = start + page_size
         serializer = ArticleListSerializer(
             articles[start:end],
@@ -40,7 +41,6 @@ class HomeView(APIView):
 
 
 class ArticleWriteView(APIView):
-    # 로그인 한 사용자만 작성가능!
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
@@ -54,6 +54,8 @@ class ArticleWriteView(APIView):
 
 
 class ArticleDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
     def get(self, request, article_id):
         """
         상세 게시글 보기 / 댓글 띄우기
@@ -93,6 +95,8 @@ class ArticleDetailView(APIView):
 
 
 class LikeView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
     def post(self, request, article_id):
         # 게시글 가져오기
         article = get_object_or_404(Article, id=article_id)
@@ -110,6 +114,8 @@ class LikeView(APIView):
 
 # comment 클래스 추가
 class CommentView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
     def get(self, request, article_id):
         article = Article.objects.get(pk=article_id)
         comments = article.comment_set.all()
@@ -128,6 +134,8 @@ class CommentView(APIView):
 
 
 class CommentDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
     def put(self, request, article_id, comment_id):
         comment = Comment.objects.get(pk=comment_id)
         if request.user == comment.user:
