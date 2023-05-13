@@ -51,6 +51,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "backend.drinkdrinkdrink.xyz",
     "localhost:10000",
+    "drinkdrinkdrink-front.onrender.com",
 ]
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 
@@ -229,8 +230,14 @@ if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True  # 개발중 사용 모든 cors 허용
     CSRF_TRUSTED_ALL_ORIGINS = True
 else:
-    CORS_ALLOWED_ORIGINS = ["https://drinkdrinkdrink.xyz"]
-    CSRF_TRUSTED_ORIGINS = ["https://drinkdrinkdrink.xyz"]
+    CORS_ALLOWED_ORIGINS = [
+        "https://drinkdrinkdrink.xyz",
+        "https://drinkdrinkdrink-front.onrender.com",
+    ]
+    CSRF_TRUSTED_ORIGINS = [
+        "https://drinkdrinkdrink.xyz",
+        "https://drinkdrinkdrink-front.onrender.com",
+    ]
 
 CORS_ALLOW_CREDENTIALS = True
 
