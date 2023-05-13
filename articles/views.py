@@ -16,7 +16,6 @@ from .serializers import (
 
 # page?=1,2,3...
 class HomeView(APIView):
-    
     def get(self, request):
         articles = Article.objects.all()
         order_condition = request.query_params.get("order", None)
@@ -42,7 +41,6 @@ class HomeView(APIView):
 
 
 class ArticleWriteView(APIView):
-    # 로그인 한 사용자만 작성가능!
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):

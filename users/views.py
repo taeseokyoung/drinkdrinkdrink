@@ -25,8 +25,6 @@ class UserView(APIView):
 
 
 class ProfileView(APIView):
-    # 비로그인 유저도 프로필까지는 볼 수 있음 permission_classes = [permissions.IsAuthenticated]
-
     def get(self, request, user_id):
         """
         마이 페이지
@@ -39,11 +37,9 @@ class ProfileView(APIView):
         """
         프로필 수정
         """
-        # serializer = UserSerializer(data=request.data)
-        # myInfo = User.objects.get(id=user_id)
+        
         user = get_object_or_404(User,id=user_id)
         serializer = UserProfileEditSerializer(user, data=request.data)
-        # print(request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save() 
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -68,6 +64,7 @@ class FollowView(APIView):
         user.is_active=False
         user.save()
         return Response({'message':'delete 요청!'})      
+               
                   
 class FollowingView(APIView):
     def get(self, request, user_id):
@@ -91,7 +88,6 @@ class FollowingView(APIView):
 
 class ActivateView(APIView):
     def get(self, request, uidb64, token):
-        print("activate")
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
