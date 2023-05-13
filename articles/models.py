@@ -5,8 +5,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 # Create your models here.
 
 
-class Article(models.Model):
-        
+class Article(models.Model):        
     def total_likes(self):
         return self.likes.count()
 

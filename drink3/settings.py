@@ -10,11 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path
+import dj_database_url
+import sentry_sdk
 import os
 import json
-from django.core.exceptions import ImproperlyConfigured
 from datetime import timedelta
+from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,7 +27,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-secret_file = os.path.join(BASE_DIR, "secrets.json")  # secrets.json 파일 위치
+# secrets.json 파일 위치
+secret_file = os.path.join(BASE_DIR, "secrets.json")
 
 with open(secret_file) as f:
     secrets = json.loads(f.read())
@@ -41,9 +45,18 @@ def get_secret(setting, secrets=secrets):
 SECRET_KEY = get_secret("SECRET_KEY")  # SECRET_KEY 가져오기
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = "RENDER" not in os.environ
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "backend.drinkdrinkdrink.xyz",
+    "localhost:10000",
+    "drinkdrinkdrink-front.onrender.com",
+]
+RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
 # Application definition
@@ -69,9 +82,10 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -102,13 +116,19 @@ WSGI_APPLICATION = "drink3.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if DEBUG:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": dj_database_url.config(
+            conn_max_age=600,
+        )
+    }
 
 
 # Password validation
@@ -150,6 +170,10 @@ STATIC_URL = "/static/"
 
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
+if not DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -202,4 +226,29 @@ EMAIL_HOST_PASSWORD = get_secret("PASSWORD")
 DEFAULT_FROM_MAIL = EMAIL_HOST_USER
 PAGE_SIZE = 20
 
-CORS_ALLOW_ALL_ORIGINS = True  # 개발중 사용 모든 cors 허용
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True  # 개발중 사용 모든 cors 허용
+    CSRF_TRUSTED_ALL_ORIGINS = True
+else:
+    CORS_ALLOWED_ORIGINS = [
+        "https://drinkdrinkdrink.xyz",
+        "https://drinkdrinkdrink-front.onrender.com",
+    ]
+    CSRF_TRUSTED_ORIGINS = [
+        "https://drinkdrinkdrink.xyz",
+        "https://drinkdrinkdrink-front.onrender.com",
+    ]
+
+CORS_ALLOW_CREDENTIALS = True
+
+if not DEBUG:
+    SESSION_COOKIE_DOMAIN = ".drinkdrinkdrink.xyz"
+    CSRF_COOKIE_DOMAIN = ".drinkdrinkdrink.xyz"
+    sentry_sdk.init(
+        dsn="https://d3902b5141864f499cb6263ba3414da7@o4505176014651392.ingest.sentry.io/4505176017207296",
+        integrations=[
+            DjangoIntegration(),
+        ],
+        traces_sample_rate=1.0,
+        send_default_pii=True,
+    )
