@@ -25,6 +25,7 @@ class ArticleListSerializer(serializers.ModelSerializer):
             "id",
             "user",
             "title",
+            "content",
             "image",
             "likes",
             "stars",
