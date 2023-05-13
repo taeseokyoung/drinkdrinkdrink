@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.conf import settings
 from rest_framework import status, permissions
 from rest_framework.views import APIView
@@ -15,22 +16,23 @@ from .serializers import (
 
 # page?=1,2,3...
 class HomeView(APIView):
+    
     def get(self, request):
         articles = Article.objects.all()
         order_condition = request.query_params.get("order", None)
         if order_condition == "recent":
-            articles = Article.objects.order_by("created_at")
-        if order_condition == "likes":
-            articles = Article.objects.order_by("likes")
+            articles = Article.objects.order_by("-created_at")
+        if order_condition == 'likes':
+            articles = Article.objects.annotate(likes_count=Count('likes')).order_by('-likes_count')
         if order_condition == "stars":
-            articles = Article.objects.order_by("stars")
+            articles = Article.objects.order_by("-stars")
         try:
             page = request.query_params.get("page", 1)
             page = int(page)
         except ValueError:
             page = 1
         page_size = settings.PAGE_SIZE
-        start = (page - 1) * page_size
+        start = (page - 1)*page_size
         end = start + page_size
         serializer = ArticleListSerializer(
             articles[start:end],
