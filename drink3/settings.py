@@ -114,8 +114,6 @@ WSGI_APPLICATION = "drink3.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 if DEBUG:
-    SESSION_COOKIE_DOMAIN = ".drinkdrinkdrink.xyz"
-    CSRF_COOKIE_DOMAIN = ".drinkdrinkdrink.xyz"
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
@@ -232,6 +230,8 @@ else:
     CSRF_TRUSTED_ORIGINS = ["https://drinkdrinkdrink-front.onrender.com"]
 
 if not DEBUG:
+    SESSION_COOKIE_DOMAIN = ".drinkdrinkdrink.xyz"
+    CSRF_COOKIE_DOMAIN = ".drinkdrinkdrink.xyz"
     sentry_sdk.init(
         dsn="https://d3902b5141864f499cb6263ba3414da7@o4505176014651392.ingest.sentry.io/4505176017207296",
         integrations=[
