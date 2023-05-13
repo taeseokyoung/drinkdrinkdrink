@@ -222,7 +222,12 @@ EMAIL_HOST_PASSWORD = get_secret("PASSWORD")
 DEFAULT_FROM_MAIL = EMAIL_HOST_USER
 PAGE_SIZE = 3
 
-CORS_ALLOW_ALL_ORIGINS = True  # 개발중 사용 모든 cors 허용
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True  # 개발중 사용 모든 cors 허용
+    CSRF_TRUSTED_ALL_ORIGINS = True
+else:
+    CORS_ALLOWED_ORIGINS = ["https://drinkdrinkdrink-front.onrender.com"]
+    CSRF_TRUSTED_ORIGINS = ["https://drinkdrinkdrink-front.onrender.com"]
 
 if not DEBUG:
     sentry_sdk.init(
