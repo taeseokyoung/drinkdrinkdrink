@@ -227,8 +227,8 @@ if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True  # 개발중 사용 모든 cors 허용
     CSRF_TRUSTED_ALL_ORIGINS = True
 else:
-    CORS_ALLOWED_ORIGINS = ["https://drinkdrinkdrink-front.onrender.com"]
-    CSRF_TRUSTED_ORIGINS = ["https://drinkdrinkdrink-front.onrender.com"]
+    CORS_ALLOWED_ORIGINS = ["https://drinkdrinkdrink.xyz"]
+    CSRF_TRUSTED_ORIGINS = ["https://drinkdrinkdrink.xyz"]
 
 if not DEBUG:
     SESSION_COOKIE_DOMAIN = ".drinkdrinkdrink.xyz"
