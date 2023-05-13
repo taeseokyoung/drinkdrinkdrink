@@ -19,6 +19,9 @@ class CommentCreateSerializer(serializers.ModelSerializer):
 
 class ArticleListSerializer(serializers.ModelSerializer):
     # user,like = something.serializer
+    
+    # 페이지에 총 좋아요 수를 불러올 수 있다.
+    total_likes = serializers.SerializerMethodField()
     class Meta:
         model = Article
         fields = (
@@ -28,10 +31,14 @@ class ArticleListSerializer(serializers.ModelSerializer):
             "content",
             "image",
             "likes",
+            "total_likes",
             "stars",
             "created_at",
             "updated_at",
         )
+
+    def get_total_likes(self,article):
+        return article.total_likes()
 
 
 class ArticleCreateSerializer(serializers.ModelSerializer):

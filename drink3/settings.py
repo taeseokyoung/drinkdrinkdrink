@@ -224,7 +224,7 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_HOST_USER = get_secret("EMAIL")
 EMAIL_HOST_PASSWORD = get_secret("PASSWORD")
 DEFAULT_FROM_MAIL = EMAIL_HOST_USER
-PAGE_SIZE = 3
+PAGE_SIZE = 20
 
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True  # 개발중 사용 모든 cors 허용
