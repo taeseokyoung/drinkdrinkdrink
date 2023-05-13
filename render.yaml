@@ -1,11 +1,11 @@
 databases:
-  - name: drinkdrinkdrink
+  - name: drinkdrinkdrink-db
     databaseName: drinkdrinkdrink
     user: drinkdrinkdrink
     region: singapore
 services:
   - type: web
-    name: drinkdrinkdrink
+    name: drinkdrinkdrink-backend
     env: python
     region: singapore
     buildCommand: "./build.sh"
