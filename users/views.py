@@ -45,20 +45,21 @@ class ActivateView(APIView):
 
 
 class ProfileView(APIView):
-    def get(self, request, user_id):
+    def get(self, request, id):
         """
         마이 페이지
         """
-        user = get_object_or_404(User, id=user_id)
+
+        user = get_object_or_404(User,id=id)
         serializer = UserProfileSerializer(user)
         return Response(serializer.data)
-
-    def put(self, request, user_id):
+    
+    def put(self, request, id):
         """
         프로필 수정
         """
-
-        user = get_object_or_404(User, id=user_id)
+        
+        user = get_object_or_404(User,id=id)
         serializer = UserProfileEditSerializer(user, data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -77,20 +78,20 @@ class ProfileView(APIView):
 
 
 class FollowView(APIView):
-    def post(self, request, user_id):
-        user = get_object_or_404(User, id=user_id)
-        user.is_active = False
+    def post(self, request, id):
+        user = get_object_or_404(User,id=id)
+        user.is_active=False
         user.save()
         return Response({"message": "delete 요청!"})
 
 
 class FollowingView(APIView):
-    def get(self, request, user_id):
+    def get(self, request, id):
         """
-        현재 페이지의 유저(user_id)를 follow 하기
+        현재 페이지의 유저(id)를 follow 하기
         """
         # you : 현재 페이지 번호의 user, me : 로그인 된 유저(나)
-        you = get_object_or_404(User, id=user_id)
+        you = get_object_or_404(User, id=id)
         me = request.user
         # 만약 you의 팔로워 목록에 me가 있으면
         if me in you.followers.all():

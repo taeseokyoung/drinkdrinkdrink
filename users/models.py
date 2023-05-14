@@ -5,19 +5,19 @@ from django.core.validators import MinValueValidator
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, user_id, password=None, **kwargs):
-        if not user_id:
+    def create_user(self, identify, password=None, **kwargs):
+        if not identify:
             raise ValueError("Users must have an ID")
 
-        user = self.model(user_id=user_id, **kwargs)
+        user = self.model(identify=identify, **kwargs)
 
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, user_id, password):
+    def create_superuser(self, identify, password):
         user = self.create_user(
-            user_id,
+            identify,
             password=password,
             age=100,
         )
@@ -29,12 +29,12 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
-    user_id = models.CharField("아이디", max_length=20, unique=True)
+    identify = models.CharField("아이디", max_length=20, unique=True)
     email = models.EmailField(
         verbose_name="이메일",
         max_length=255,
-        unique=True,
     )
+            # unique=True,
     nickname = models.CharField("닉네임", max_length=10, null=True)
     profile_img = models.ImageField("프로필 사진", null=True, blank=True, upload_to="%Y/%m")
     age = models.PositiveIntegerField("나이", validators=[MinValueValidator(20)])
@@ -77,7 +77,7 @@ class User(AbstractBaseUser):
 
     objects = UserManager()
 
-    USERNAME_FIELD = "user_id"  # 로그인 뭘로 할건지
+    USERNAME_FIELD = "identify"  # 로그인 뭘로 할건지
     REQUIRED_FIELDS = []  # null true 안 줄 것들
 
     def __str__(self):
