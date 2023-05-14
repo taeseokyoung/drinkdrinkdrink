@@ -14,7 +14,7 @@ from .serializers import (
 
 class CategoryView(APIView):
     # 관리자 계정만 열람 및 작성가능
-    # permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAdminUser]
 
     def get(self, request):
         """
