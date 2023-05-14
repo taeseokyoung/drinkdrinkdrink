@@ -57,7 +57,7 @@ class ArticleDetailSerializer(serializers.ModelSerializer):
 
     # user를 user_id로 보여줌
     def get_user(self, obj):
-        return obj.user.user_id
+        return obj.user.identify
 
     # 현재 게시글의 좋아요 갯수 들고오기
     def get_likes_num(self, obj):

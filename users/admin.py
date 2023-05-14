@@ -18,7 +18,7 @@ class UserCreationForm(forms.ModelForm):
         model = User
         fields = [
             "email",
-            "user_id",
+            "identify",
             "nickname",
             "age",
             "profile_img",
@@ -48,7 +48,7 @@ class UserChangeForm(forms.ModelForm):
         model = User
         fields = [
             "email",
-            "user_id",
+            "identify",
             "nickname",
             "age",
             "profile_img",
@@ -64,7 +64,7 @@ class UserAdmin(BaseUserAdmin):
     add_form = UserCreationForm
     list_display = [
         "email",
-        "user_id",
+        "identify",
         "nickname",
         "age",
         "profile_img",
@@ -76,7 +76,7 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = [
         (
             None,
-            {"fields": ("email", "user_id", "password","followings", "fav_alcohol", "amo_alcohol")},
+            {"fields": ("email", "identify", "password","followings", "fav_alcohol", "amo_alcohol")},
         ),
         ("Permissions", {"fields": ("is_admin",)}),
     ]
@@ -99,8 +99,8 @@ class UserAdmin(BaseUserAdmin):
             },
         ),
     ]
-    search_fields = ["user_id"]
-    ordering = ["user_id"]  # admin 페이지의 오름차순 정렬 기준
+    search_fields = ["identify"]
+    ordering = ["identify"]  # admin 페이지의 오름차순 정렬 기준
     filter_horizontal = []
 
 
