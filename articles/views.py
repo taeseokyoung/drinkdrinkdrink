@@ -20,7 +20,7 @@ class HomeView(APIView):
         articles = Article.objects.all()
         order_condition = request.query_params.get("order", None)
         if order_condition == "recent":
-            articles = Article.objects.order_by("-created_at")
+            articles = Article.objects.order_by("created_at")
         if order_condition == 'likes':
             articles = Article.objects.annotate(likes_count=Count('likes')).order_by('-likes_count')
         if order_condition == "stars":
@@ -118,7 +118,7 @@ class CommentView(APIView):
 
     def get(self, request, article_id):
         article = Article.objects.get(pk=article_id)
-        comments = article.comment_set.all()
+        comments = article.comments.all()
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
