@@ -60,21 +60,34 @@ class ProfileView(APIView):
         """
         
         user = get_object_or_404(User,id=id)
-        serializer = UserProfileEditSerializer(user, data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        if request.user.id == user.id:
+            serializer = UserProfileEditSerializer(user, data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request):
+            return Response(
+                {"message":"본인만 수정할 수 있습니다."} , status=status.HTTP_401_UNAUTHORIZED)
+        
+    def delete(self, request, id):
         """
         회원 탈퇴
         """
-        user = request.user
-        user.is_active = False
-        user.save()
-        return
+        user = get_object_or_404(User,id=id)
+        if request.user.id == user.id:
+            user = request.user
+            user.is_active = False
+            user.save()
+            return Response({"message":"탈퇴하였습니다."})
+        else:
+            return Response(
+                {"message":"본인만 신청할 수 있습니다."} , status=status.HTTP_401_UNAUTHORIZED)
+        # user = request.user
+        # user.is_active = False
+        # user.save()
+        # return
                                  
 class FollowView(APIView):
     def get(self, request, id):
