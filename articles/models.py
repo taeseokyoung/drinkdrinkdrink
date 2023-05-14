@@ -5,13 +5,11 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 # Create your models here.
 
 
-class Article(models.Model):
+class Article(models.Model):   
     def total_likes(self):
         return self.likes.count()
 
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="my_articles"
-    )  # 마이페이지 나의 게시물 보기 활성화를 위해 related_name 추가
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="my_articles") # 마이페이지 나의 게시물 보기 활성화를 위해 related_name 추가
     title = models.CharField("제목", max_length=50)
     content = models.TextField("내용")
     image = models.ImageField("이미지", upload_to="%Y/%m/", blank=True)
@@ -24,6 +22,8 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
+    
+
 
 
 class Comment(models.Model):

@@ -39,7 +39,7 @@ class User(AbstractBaseUser):
     profile_img = models.ImageField("프로필 사진", null=True, blank=True, upload_to="%Y/%m")
     age = models.PositiveIntegerField("나이", validators=[MinValueValidator(20)])
     followings = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="followers"
+        settings.AUTH_USER_MODEL, related_name="followers", blank=True
     )
     # follow 기능 구현하시는 분이 골라서 선택!
     # followings = models.ManyToManyField("self", symmetrical=False, related_name="followers", blank=True)
