@@ -20,7 +20,7 @@ class HomeView(APIView):
         articles = Article.objects.all()
         order_condition = request.query_params.get("order", None)
         if order_condition == "recent":
-            articles = Article.objects.order_by("-created_at")
+            articles = Article.objects.order_by("created_at")
         if order_condition == 'likes':
             articles = Article.objects.annotate(likes_count=Count('likes')).order_by('-likes_count')
         if order_condition == "stars":
