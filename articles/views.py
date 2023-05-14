@@ -101,10 +101,10 @@ class LikeView(APIView):
         # 게시글 가져오기
         article = get_object_or_404(Article, id=article_id)
         # 현재 로그인 된 유저가 좋아요가 눌러져 있을 경우
-        if request.user.id in article.likes.all():
+        if request.user in article.likes.all():
             # 좋아요를 취소
             article.likes.remove(request.user)
-            return Response("좋아요를 취소했습니다.", status=status.HTTP_200_OK)
+            return Response("좋아요를 취소했습니다.", status=status.HTTP_204_NO_CONTENT)
         # 현재 로그인 된 유저가 좋아요를 누르지 않았을 경우
         else:
             # 좋아요 추가
@@ -118,7 +118,7 @@ class CommentView(APIView):
 
     def get(self, request, article_id):
         article = Article.objects.get(pk=article_id)
-        comments = article.comment_set.all()
+        comments = article.comments.all()
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
