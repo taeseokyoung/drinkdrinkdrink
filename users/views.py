@@ -75,17 +75,8 @@ class ProfileView(APIView):
         user.is_active = False
         user.save()
         return
-
-
+                                 
 class FollowView(APIView):
-    def post(self, request, id):
-        user = get_object_or_404(User,id=id)
-        user.is_active=False
-        user.save()
-        return Response({"message": "delete 요청!"})
-
-
-class FollowingView(APIView):
     def get(self, request, id):
         """
         현재 페이지의 유저(id)를 follow 하기
