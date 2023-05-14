@@ -1,19 +1,26 @@
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
+from django.shortcuts import redirect
 from rest_framework.views import APIView
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.generics import get_object_or_404
 
 from .models import User
-from .serializers import UserSerializer, UserProfileSerializer, UserProfileEditSerializer
+from .serializers import (
+    UserSerializer,
+    UserProfileSerializer,
+    UserProfileEditSerializer,
+)
 from .tokens import account_activation_token
 
 
 class UserView(APIView):
     def post(self, request):
+        if request.data["password_check"] != request.data["password"]:
+            return Response(
+                {"message": "비밀번호 불일치!"}, status=status.HTTP_400_BAD_REQUEST
+            )
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -24,11 +31,25 @@ class UserView(APIView):
             )
 
 
+class ActivateView(APIView):
+    def get(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+            if account_activation_token.check_token(user, token):
+                User.objects.filter(pk=uid).update(is_active=True)
+                return redirect("http://127.0.0.1:5500/doc/login.html")
+            return Response({"error": "AUTH_FAIL"}, status=400)
+        except KeyError:
+            return Response({"error": "KEY_ERROR"}, status=400)
+
+
 class ProfileView(APIView):
     def get(self, request, id):
         """
         마이 페이지
         """
+
         user = get_object_or_404(User,id=id)
         serializer = UserProfileSerializer(user)
         return Response(serializer.data)
@@ -41,13 +62,11 @@ class ProfileView(APIView):
         user = get_object_or_404(User,id=id)
         serializer = UserProfileEditSerializer(user, data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save() 
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
- 
-        
+
     def delete(self, request):
         """
         회원 탈퇴
@@ -63,9 +82,9 @@ class FollowView(APIView):
         user = get_object_or_404(User,id=id)
         user.is_active=False
         user.save()
-        return Response({'message':'delete 요청!'})      
-               
-                  
+        return Response({"message": "delete 요청!"})
+
+
 class FollowingView(APIView):
     def get(self, request, id):
         """
@@ -84,16 +103,3 @@ class FollowingView(APIView):
             # 팔로우 하기
             you.followers.add(me)
             return Response("팔로우 했습니다.", status=status.HTTP_200_OK)
-
-
-class ActivateView(APIView):
-    def get(self, request, uidb64, token):
-        try:
-            uid = force_str(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(pk=uid)
-            if account_activation_token.check_token(user, token):
-                User.objects.filter(pk=uid).update(is_active=True)
-                return Response({"인증 완료!"})
-            return Response({"error": "AUTH_FAIL"}, status=400)
-        except KeyError:
-            return Response({"error": "KEY_ERROR"}, status=400)
